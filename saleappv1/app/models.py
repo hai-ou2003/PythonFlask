@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app import db, app
+from flask_login import UserMixin
 
 
 class Category(db.Model):
@@ -10,6 +11,9 @@ class Category(db.Model):
     name = Column(String(50), nullable=False, unique=True)
     products = relationship('Product', backref='category', lazy=True)
 
+    def __str__(self):
+        return self.name
+
 
 class Product(db.Model):
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -17,6 +21,20 @@ class Product(db.Model):
     price = Column(Float, default=0)
     image = Column(String(100))
     category_id = Column(Integer, ForeignKey(Category.id), nullable=False)
+
+    def __str__(self):
+        return self.name
+
+
+class User(db.Model, UserMixin):
+    __tablename__ = 'user'
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(50))
+    username = Column(String(100), nullable=False)
+    password = Column(String(255), nullable=False)
+    email = Column(String(100), default=None)
+    active = Column(Boolean, default=True)
+    avatar = Column(String(255), default=None)
 
 
 if __name__ == '__main__':
