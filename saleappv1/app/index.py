@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect
 from flask_login import login_user
-
+import hashlib
 from app import app, dao, login
 from app.models import User
 
@@ -25,7 +25,8 @@ def login_admin():
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
-        user = User.query.filter(username == username,password == password).first()
+        hash_password = str(hashlib.md5(password.strip().encode('utf8')).hexdigest())
+        user = User.query.filter_by(username=username, password=hash_password).first()
         if user:
             login_user(user=user)
     return redirect("/admin")

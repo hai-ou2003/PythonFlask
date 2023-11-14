@@ -16,7 +16,7 @@ def load_products(kw=None):
     return products.all()
 
 
-def create_user(name,username,password):
+def create_user(name, username, password):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
     user = User(name=name, username=username, password=password)
     db.session.add(user)
@@ -24,5 +24,5 @@ def create_user(name,username,password):
 
 if __name__ == "__main__":
     with app.app_context():
-        pass
-        #create_user("hai", "test", "1234567890a@A")
+        #pass
+        create_user("hai", "test", "1234567890a@A")
