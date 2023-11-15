@@ -1,5 +1,7 @@
+import math
+
 from flask import render_template, request, redirect
-from flask_login import login_user
+from flask_login import login_user, login_manager
 import hashlib
 from app import app, dao, login
 from app.models import User
@@ -8,11 +10,14 @@ from app.models import User
 @app.route('/')
 def index():
     kw = request.args.get('kw')
-
+    cate_id = request.args.get('cate_id')
+    page = request.args.get('page')
     cates = dao.load_categories()
-    products = dao.load_products(kw)
+    num = dao.count_row()
+    products = dao.load_products(kw, cate_id, page)
 
-    return render_template('index.html', categories=cates, products=products)
+    return render_template('index.html', categories=cates, products=products,
+                           pages=math.ceil(num/app.config['PAGE_SIZE']))
 
 
 @login.user_loader
@@ -25,12 +30,13 @@ def login_admin():
     if request.method == 'POST':
         username = request.form.get("username")
         password = request.form.get("password")
-        hash_password = str(hashlib.md5(password.strip().encode('utf8')).hexdigest())
-        user = User.query.filter_by(username=username, password=hash_password).first()
+        user = dao.authenicate_user(username, password)
         if user:
             login_user(user=user)
     return redirect("/admin")
 
+
 if __name__ == '__main__':
     from app import admin
+
     app.run(debug=True)

@@ -4,10 +4,15 @@ from flask_admin.contrib.sqla import ModelView
 from flask_login import current_user, logout_user
 
 from app import db, app
-from app.models import Category, Product
+from app.models import Category, Product, UserRole
 
 
-class ProductView(ModelView):
+class AuthenticatedAdmin(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRole.Admin
+
+
+class ProductView(AuthenticatedAdmin):
     column_list = ['name', 'price', 'category']
     can_view_details = True
     can_export = True
@@ -15,20 +20,14 @@ class ProductView(ModelView):
     column_filters = ['price']
     column_editable_list = ['name', 'price', ]
 
-    def is_accessible(self):
-        return current_user.is_authenticated
 
-
-class CategoryView(ModelView):
+class CategoryView(AuthenticatedAdmin):
     column_list = ['name', 'products']
     can_view_details = True
     can_export = True
     column_searchable_list = ['name']
     column_filters = ['name']
     column_editable_list = ['name', 'products']
-
-    def is_accessible(self):
-        return current_user.is_authenticated
 
 
 class StatsView(BaseView):

@@ -1,7 +1,8 @@
-from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, Float, ForeignKey, Boolean, Enum
 from sqlalchemy.orm import relationship
 from app import db, app
 from flask_login import UserMixin
+import enum
 
 
 class Category(db.Model):
@@ -26,6 +27,11 @@ class Product(db.Model):
         return self.name
 
 
+class UserRole(enum.Enum):
+    Admin = 1
+    User = 2
+
+
 class User(db.Model, UserMixin):
     __tablename__ = 'user'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -35,12 +41,13 @@ class User(db.Model, UserMixin):
     email = Column(String(100), default=None)
     active = Column(Boolean, default=True)
     avatar = Column(String(255), default=None)
+    user_role = Column(Enum(UserRole), default=UserRole.User)
 
 
 if __name__ == '__main__':
     with app.app_context():
         pass
-        # db.create_all()
+        #db.create_all()
         #
         # c1 = Category(name='Mobile')
         # c2 = Category(name='Tablet')
