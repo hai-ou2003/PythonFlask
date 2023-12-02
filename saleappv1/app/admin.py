@@ -18,7 +18,7 @@ class ProductView(AuthenticatedAdmin):
     can_export = True
     column_searchable_list = ['name']
     column_filters = ['price']
-    column_editable_list = ['name', 'price', ]
+    column_editable_list = ['name', 'price']
 
 
 class CategoryView(AuthenticatedAdmin):
